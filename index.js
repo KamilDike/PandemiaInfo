@@ -6,11 +6,14 @@ const { admin } = require('./config/firebase');
 const app = express();
 
 app.get('/infections', async (req, res) => {
-    const infectionsRef = admin.firestore().collection('HistoriaZakażen').doc('obecnie');
-    const doc = await infectionsRef.get();
-    if (doc.exists) {
-        const data = doc.data()
-        res.json(data)
+    const infectionsRef = admin.firestore().collection('HistoriaZarażen').doc('obecnie').collection('Zarażenia');
+    const snapshot = await infectionsRef.get();
+    if (!snapshot.empty) {
+        let response = []
+        snapshot.forEach(doc => {
+            response.push(doc.data())
+        });
+        res.json(response)
     } else {
         res.json('Maintenance.')
     }
